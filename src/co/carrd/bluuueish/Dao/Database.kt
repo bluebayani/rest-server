@@ -1,4 +1,4 @@
-package com.example.Dao
+package co.carrd.bluuueish.Dao
 
 import com.almworks.sqlite4java.SQLiteConnection
 import java.io.File

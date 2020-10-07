@@ -23,10 +23,9 @@ import io.ktor.routing.*
 import io.ktor.utils.io.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import com.almworks.sqlite4java.SQLiteConnection
-import com.example.Dao.Database
-import com.example.Dao.person.Person
-import com.example.Dao.person.PersonDao
+import co.carrd.bluuueish.Dao.Database
+import co.carrd.bluuueish.Dao.person.Person
+import co.carrd.bluuueish.Dao.person.PersonDao
 import com.google.gson.Gson
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)

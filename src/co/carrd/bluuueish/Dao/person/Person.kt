@@ -1,4 +1,4 @@
-package com.example.Dao.person
+package co.carrd.bluuueish.Dao.person
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

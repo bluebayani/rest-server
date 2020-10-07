@@ -1,6 +1,6 @@
-package com.example.Dao.person
-import com.example.Dao.Dao
-import com.example.Dao.Database
+package co.carrd.bluuueish.Dao.person
+import co.carrd.bluuueish.Dao.Dao
+import co.carrd.bluuueish.Dao.Database
 
 class PersonDao: Dao() {
     fun addPerson(pObj : Person) {
