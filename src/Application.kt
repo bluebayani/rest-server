@@ -21,10 +21,11 @@ import io.ktor.response.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.utils.io.*
-import com.almworks.sqlite4java.SQLiteConnection
-import com.example.Dao.Database
-import com.example.Dao.person.Person
-import com.example.Dao.person.PersonDao
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import co.carrd.bluuueish.Dao.Database
+import co.carrd.bluuueish.Dao.person.Person
+import co.carrd.bluuueish.Dao.person.PersonDao
 import com.google.gson.Gson
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -37,46 +38,61 @@ fun Application.module(testing: Boolean = false) {
     //@annotation
     //routing constructor only takes one parameter, which is a lambda function
     //DSL - Domain Specific Language
-    routing {
-        this.get("/PersonService/Add") {
-            println("HTTP message is using GET method with /get")
-            //request parameters
-            val fn = call.request.queryParameters["FirstName"]
-            val ln = call.request.queryParameters["LastName"]
-            val sn = call.request.queryParameters["SSN"]
-            //print parameters
-            val response = String.format("First name is %s and Last name is %s", fn,ln)
-            //http://localhost:8080/get?FirstName=Blue&LastName=Bayani
-            //Output: First name is Blue and Last name is Bayani
-            //response, status okay, text
-            val pObj = Person(fn,ln,sn)
-            val dao = PersonDao().addPerson(pObj)
-            val dbObj = Database.getInstance()
-            call.respondText(response, status= HttpStatusCode.OK, contentType = ContentType.Text.Plain)
-        }
-        get("PersonService/getAll") {
-            val pList = PersonDao().getAll()
-            println("The number of students: ${pList.size}")
-            val RespJsonStr = Gson().toJson(pList)
-            call.respondText(RespJsonStr, status= HttpStatusCode.OK, contentType = ContentType.Application.Json)
-        }
-        post("/PersonService/add") {
-            val contType = call.request.contentType()
-            val data = call.request.receiveChannel()
-            val dataLength = data.availableForRead
-            var output = ByteArray(dataLength)
-            data.readAvailable(output)
-            //read data recieve data then put into buffer
-            val str = String(output)
+    val server = embeddedServer(Netty, 8080) {
+        routing {
+            this.get("/PersonService/Add") {
+                println("HTTP message is using GET method with /get")
+                //request parameters
+                val fn = call.request.queryParameters["FirstName"]
+                val ln = call.request.queryParameters["LastName"]
+                val sn = call.request.queryParameters["SSN"]
+                //print parameters
+                val response = String.format("First name is %s and Last name is %s", fn, ln)
+                //http://localhost:8080/get?FirstName=Blue&LastName=Bayani
+                //Output: First name is Blue and Last name is Bayani
+                //response, status okay, text
+                val pObj = Person(fn, ln, sn)
+                val dao = PersonDao().addPerson(pObj)
+                val dbObj = Database.getInstance()
+                call.respondText(
+                    response,
+                    status = HttpStatusCode.OK,
+                    contentType = ContentType.Text.Plain
+                )
+            }
+            get("PersonService/getAll") {
+                val pList = PersonDao().getAll()
+                println("The number of students: ${pList.size}")
+                val RespJsonStr = Gson().toJson(pList)
+                call.respondText(
+                    RespJsonStr,
+                    status = HttpStatusCode.OK,
+                    contentType = ContentType.Application.Json
+                )
+            }
+            post("/PersonService/add") {
+                val contType = call.request.contentType()
+                val data = call.request.receiveChannel()
+                val dataLength = data.availableForRead
+                var output = ByteArray(dataLength)
+                data.readAvailable(output)
+                //read data recieve data then put into buffer
+                val str = String(output)
 
-            println("HTTP message is using POST method with /post ${contType} ${str}")
-            call.respondText("The POST request was successfully processed", status= HttpStatusCode.OK, contentType = ContentType.Text.Plain)
-//using postman at vvv
-//http://0.0.0.0:8080/post
-//in body raw, JSON
-//{"FirstName":"James","LastName":"Shen"}
+                println("HTTP message is using POST method with /post ${contType} ${str}")
+                call.respondText(
+                    "The POST request was successfully processed",
+                    status = HttpStatusCode.OK,
+                    contentType = ContentType.Text.Plain
+                )
+                //using postman at vvv
+                //http://0.0.0.0:8080/post
+                //in body raw, JSON
+                //{"FirstName":"James","LastName":"Shen"}
+            }
         }
     }
+    server.start(wait = true)
 }
 
 
